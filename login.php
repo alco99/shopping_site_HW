@@ -3,6 +3,9 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+		<meta http-equiv="refresh" content="3;url=index.php"/> <!--跳轉-->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
 		<title>這裡放標題</title>
 		<?php # 一些 PHP 程式碼
 		require_once 'db_connect.php';
@@ -13,20 +16,31 @@
 		?>
 	</head>
 	<body>
-		<?php # 一些 PHP 程式碼
-		$_SESSION['login'] = '1';
-		echo $_SESSION['login'];
-		
-		echo '<a href = "index.php" >';
-		//插入圖片
-		echo '首頁';
-		echo '</a>';
-
-		
-		
-		
-
-		?>
+		<div class="container">	
+			<?php # 一些 PHP 程式碼
+				echo '<div class="row">';
+					//logo
+					echo '<a href = "index.php" >';
+					echo '<img src = "images/logo.png">';
+					echo '</a>';
+				echo '</div>';
+				
+				echo '<div class="row">';
+					echo '<form action = "" method = "post">';
+						echo 'Account ：';
+						echo '<input type = "text" name = "account">';
+						echo '<br/>';
+						echo 'password：';
+						echo '<input type = "password" name = "password">';
+						echo '<br/>';
+					echo '</form>';
+					
+					$_SESSION['login'] = '1';
+					//echo $_SESSION['login'];
+				echo '</div>';
+			
+			?>
+		</div>	
 	</body>
 </html> 
 <?php # 一些 PHP 函式放這邊
