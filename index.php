@@ -19,13 +19,36 @@
 		}
 		
 		//收到分類顯示商品的指令
-		if (isset($_POST["category"]) && ($_POST["category"]=="books")) {
-			$getCat = getProductsCategory(1);
-		} else if(isset($_POST["category"]) && ($_POST["category"]=="cd")){
-			$getCat = getProductsCategory(2);
+		if (isset($_POST["category"]) && ($_POST["category"]=="Book")) {
+			$cate = 1;
+			$getCat = getProductsCategory($cate);
+		} else if(isset($_POST["category"]) && ($_POST["category"]=="CD")){
+			$cate = 2;
+			$getCat = getProductsCategory($cate);
 		}
-		
-		
+		/*
+		if (isset($_POST["sorting"]) && ($_POST["sorting"]=="submit")){
+			if (isset($_POST["sort"]) && ($_POST["sort"]=="pricelow")){
+				if($bookname){
+					$bookname = getProduct($_POST["search"], 'UnitPrice', 'DESC');
+				} else if($getCat){
+					$getCat = getProductsCategory($cate, 'UnitPrice', 'DESC');
+				}
+			} else if (isset($_POST["sort"]) && ($_POST["sort"]=="pricehigh")) {
+				if($bookname){
+					$bookname = getProduct($_POST["search"], 'UnitPrice', 'ASC');
+				} else if($getCat){
+					$getCat = getProductsCategory($cate, 'UnitPrice', 'ASC');
+				}
+			} else if (isset($_POST["sort"]) && ($_POST["sort"]=="stockmany")) {
+				if($bookname){
+					$bookname = getProduct($_POST["search"], 'InStock', 'DESC');
+				} else if($getCat){
+					$getCat = getProductsCategory($cate, 'InStock', 'DESC');
+				}
+			}
+			echo '<meta http-equiv="refresh" content="1;url=index.php"/>';
+		}*/
 		
 		?>
 	</head>
@@ -79,13 +102,14 @@
 						echo '<hr/>';
 						
 						echo '<form action = "" method = "post">';
-							echo '<input type = "submit" name = "category" value = "books">';
+							echo '<input type = "submit" name = "category" value = "Book">';
 							echo '<br/>';
-							echo '<input type = "submit" name = "category" value = "cd">';
+							echo '<input type = "submit" name = "category" value = "CD">';
 						echo '</form>';
 						
+						/*
 						//顯示排序選項
-						if($bookname) {
+						if($bookname || $getCat) {
 							echo '<hr/>';
 							echo '排序：<br/>';
 							echo '<form action = "" method = "post">';
@@ -95,11 +119,12 @@
 								echo '<input type = "radio" name = "sort" value = "pricehigh">';
 								echo '價錢從高到低<br/>';
 								echo '<br/>';
-								echo '<input type = "radio" name = "sort" value = "stock">';
+								echo '<input type = "radio" name = "sort" value = "stockmany">';
 								echo '庫存量多到少<br/>';
 								echo '<br/>';
+								//echo '<input type = "submit" name = "sorting" value = "submit">';
 							echo '</form>';
-						}
+						}*/
 						
 						
 						
