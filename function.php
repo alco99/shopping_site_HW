@@ -1,12 +1,12 @@
 <?php
 //商品種類篩選
-function getProductsCategory($cat) {
+function getProductsCategory($cat, $sort = 'ID', $pat = 'DESC') {
 	global $dblink;
 	$exam_sql  = "
 				SELECT * 
 				FROM products 
 				WHERE Category = '$cat'
-				ORDER BY UnitPrice DESC
+				ORDER BY '$sort' '$pat'
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
 	$idx=0;
@@ -24,13 +24,13 @@ function getProductsCategory($cat) {
 }
 
 //搜尋產品名稱
-function getProduct($pro) {
+function getProduct($pro, $sort = 'ID', $pat = 'DESC') {
 	global $dblink;
 	$exam_sql  = "
 				SELECT * 
 				FROM products 
 				WHERE ProductName LIKE '%$pro%'
-				ORDER BY UnitPrice DESC
+				ORDER BY '$sort' '$pat'
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
 	$idx=0;
@@ -48,12 +48,13 @@ function getProduct($pro) {
 }
 
 //取得所有商品
-function getAllProduct() {
+function getAllProduct($sort = 'ID', $pat = 'DESC') {
 	global $dblink;
 	$exam_sql  = "
 				SELECT * 
 				FROM products 
 				WHERE InStock != 0
+				ORDER BY '$sort' '$pat'
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
 	$idx=0;
