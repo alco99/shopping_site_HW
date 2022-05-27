@@ -7,12 +7,12 @@
 		<script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
 		<title>no.918</title>
 		<?php # 一些 PHP 程式碼
-		
+		echo $_SESSION['login'];
 		require_once 'db_connect.php';
 		require_once 'function.php';
-		//$bookname = NULL;
-		//$getCat = NULL;
-		
+		$bookname = NULL;
+		$getCat = NULL;
+		print_r($_POST);
 		//收到搜尋指令
 		if (isset($_POST["search"]) && ($_POST["search"]!="")) {
 			$bookname = getProduct($_POST["search"]);
@@ -20,35 +20,59 @@
 		
 		//收到分類顯示商品的指令
 		if (isset($_POST["category"]) && ($_POST["category"]=="Book")) {
-			$cate = 1;
-			$getCat = getProductsCategory($cate);
+			$getCat = getProductsCategory(1);
 		} else if(isset($_POST["category"]) && ($_POST["category"]=="CD")){
-			$cate = 2;
-			$getCat = getProductsCategory($cate);
+			$getCat = getProductsCategory(2);
 		}
-		/*
-		if (isset($_POST["sorting"]) && ($_POST["sorting"]=="submit")){
-			if (isset($_POST["sort"]) && ($_POST["sort"]=="pricelow")){
-				if($bookname){
-					$bookname = getProduct($_POST["search"], 'UnitPrice', 'DESC');
-				} else if($getCat){
-					$getCat = getProductsCategory($cate, 'UnitPrice', 'DESC');
-				}
-			} else if (isset($_POST["sort"]) && ($_POST["sort"]=="pricehigh")) {
-				if($bookname){
-					$bookname = getProduct($_POST["search"], 'UnitPrice', 'ASC');
-				} else if($getCat){
-					$getCat = getProductsCategory($cate, 'UnitPrice', 'ASC');
-				}
-			} else if (isset($_POST["sort"]) && ($_POST["sort"]=="stockmany")) {
-				if($bookname){
-					$bookname = getProduct($_POST["search"], 'InStock', 'DESC');
-				} else if($getCat){
-					$getCat = getProductsCategory($cate, 'InStock', 'DESC');
-				}
+
+		if (isset($_POST["sort"]) && ($_POST["sort"]=="pricelow")){
+			
+			if(isset($_POST["search"])){
+				
+				$bookname = NULL;
+				$bookname = getProduct($_POST["search"], 'UnitPrice', 'ASC');
+			} else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){
+				
+				$getCat = NULL;
+				$getCat = getProductsCategory(1, 'UnitPrice', 'ASC');
+			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){
+				
+				$getCat = NULL;
+				$getCat = getProductsCategory(2, 'UnitPrice', 'ASC');
 			}
-			echo '<meta http-equiv="refresh" content="1;url=index.php"/>';
-		}*/
+		} else if (isset($_POST["sort"]) && ($_POST["sort"]=="pricehigh")) {
+			
+			if(isset($_POST["search"])){
+				
+				$bookname = NULL;
+				$bookname = getProduct($_POST["search"], 'UnitPrice');
+			}  else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){
+				$getCat = NULL;
+				$getCat = getProductsCategory(1, 'UnitPrice');
+				
+			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){
+				$getCat = NULL;
+				$getCat = getProductsCategory(2, 'UnitPrice');
+				
+			}
+		} else if (isset($_POST["sort"]) && ($_POST["sort"]=="stockmany")) {
+			
+			if(isset($_POST["search"])){
+				
+				$bookname = NULL;
+				$bookname = getProduct($_POST["search"], 'InStock');
+			}  else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){
+				
+				$getCat = NULL;
+				$getCat = getProductsCategory(1, 'InStock');
+			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){
+				
+				$getCat = NULL;
+				$getCat = getProductsCategory(2, 'InStock');
+			}
+		}
+			
+		
 		
 		?>
 	</head>
@@ -63,12 +87,20 @@
 						echo '</a>';
 					echo '</div>';
 					
-					echo '<div class="col-5">';
+					echo '<div class="col-4">';
 						//搜尋
 						echo '<form action = "" method = "post">';
 							echo '<input type = "text" name = "search">';
 							echo '<input type = "submit" value = "搜尋">';
 						echo '</form>';
+					echo '</div>';
+					
+					echo '<div class="col-2">';//會員頁面
+						if($_SESSION['login']){
+							echo '<a href = "member.php" >';
+							echo '<img src = "images/memberpage.png">';
+							echo '</a>';
+						}
 					echo '</div>';
 					
 					echo '<div class="col-1">';
@@ -80,8 +112,7 @@
 					echo '</div>';
 					
 					//登入登出用超連結
-					echo '<div class="col-3">';
-						//echo $_SESSION['login'];
+					echo '<div class="col-2">';
 						if($_SESSION['login']){
 							echo '<a href = "logout.php" >';
 							//插入圖片
@@ -107,25 +138,27 @@
 							echo '<input type = "submit" name = "category" value = "CD">';
 						echo '</form>';
 						
-						/*
-						//顯示排序選項
 						if($bookname || $getCat) {
 							echo '<hr/>';
 							echo '排序：<br/>';
 							echo '<form action = "" method = "post">';
-								echo '<input type = "radio" name = "sort" value = "pricelow">';
+								if($bookname){
+									echo '<input type = "hidden" name = "search" value = '.$_POST["search"].'>';
+								}elseif($getCat){
+									echo '<input type = "hidden" name = "category" value = '.$_POST["category"].'>';
+								}
+								echo '<input type = "radio" name = "sort" value = "pricelow" onchange="this.form.submit()">';
 								echo '價錢從低到高<br/>';
 								echo '<br/>';
-								echo '<input type = "radio" name = "sort" value = "pricehigh">';
+								echo '<input type = "radio" name = "sort" value = "pricehigh" onchange="this.form.submit()">';
 								echo '價錢從高到低<br/>';
 								echo '<br/>';
-								echo '<input type = "radio" name = "sort" value = "stockmany">';
+								echo '<input type = "radio" name = "sort" value = "stockmany" onchange="this.form.submit()">';
 								echo '庫存量多到少<br/>';
 								echo '<br/>';
 								//echo '<input type = "submit" name = "sorting" value = "submit">';
 							echo '</form>';
-						}*/
-						
+						}
 						
 						
 					echo '</div>';
