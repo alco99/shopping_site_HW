@@ -18,10 +18,6 @@
 	<body>
 		<?php # 一些 PHP 程式碼
 		//logo
-		echo '<a href = "index.php" >';
-		echo '<img src = "images/logo.png">';
-		echo '</a>';
-		
 		session_destroy();
 		
 		
