@@ -6,7 +6,7 @@ function getProductsCategory($cat, $sort = 'ID', $pat = 'DESC') {
 				SELECT * 
 				FROM products 
 				WHERE Category = '$cat'
-				ORDER BY '$sort' '$pat'
+				ORDER BY $sort $pat
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
 	$idx=0;
@@ -30,7 +30,7 @@ function getProduct($pro, $sort = 'ID', $pat = 'DESC') {
 				SELECT * 
 				FROM products 
 				WHERE ProductName LIKE '%$pro%'
-				ORDER BY '$sort' '$pat'
+				ORDER BY $sort $pat
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
 	$idx=0;
@@ -54,7 +54,7 @@ function getAllProduct($sort = 'ID', $pat = 'DESC') {
 				SELECT * 
 				FROM products 
 				WHERE InStock != 0
-				ORDER BY '$sort' '$pat'
+				ORDER BY $sort $pat
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
 	$idx=0;
