@@ -17,7 +17,6 @@
 				$memdata = getMember($_POST["account"]);
 				if($memdata == ""){//無帳號則顯示錯誤
 					echo "帳號輸入錯誤";
-					
 				} else {
 					if($_POST["password"] == $memdata['Password'][0]){//登入成功
 						$_SESSION['login'] = '1';
