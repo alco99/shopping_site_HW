@@ -4,10 +4,12 @@
 	<head>
 		<meta charset="UTF-8">
 		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript" src="js/jquery.form.min.js"></script> 
 		<title>no.918</title>
 		<?php # 一些 PHP 程式碼
-		echo $_SESSION['login'];
+		//echo $_SESSION['login'];
 		require_once 'db_connect.php';
 		require_once 'function.php';
 		$bookname = NULL;
@@ -24,49 +26,38 @@
 		} else if(isset($_POST["category"]) && ($_POST["category"]=="CD")){
 			$getCat = getProductsCategory(2);
 		}
-
-		if (isset($_POST["sort"]) && ($_POST["sort"]=="pricelow")){
-			
-			if(isset($_POST["search"])){
-				
+		
+		//排序
+		if (isset($_POST["sort"]) && ($_POST["sort"]=="pricelow")){  //價錢由低到高
+			if(isset($_POST["search"])){ //搜尋的商品
 				$bookname = NULL;
 				$bookname = getProduct($_POST["search"], 'UnitPrice', 'ASC');
-			} else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){
-				
+			} else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){ //書籍種類
 				$getCat = NULL;
 				$getCat = getProductsCategory(1, 'UnitPrice', 'ASC');
-			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){
-				
+			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){//CD種類
 				$getCat = NULL;
 				$getCat = getProductsCategory(2, 'UnitPrice', 'ASC');
 			}
-		} else if (isset($_POST["sort"]) && ($_POST["sort"]=="pricehigh")) {
-			
-			if(isset($_POST["search"])){
-				
+		} else if (isset($_POST["sort"]) && ($_POST["sort"]=="pricehigh")) {//價錢由高到低
+			if(isset($_POST["search"])){//搜尋的商品
 				$bookname = NULL;
 				$bookname = getProduct($_POST["search"], 'UnitPrice');
-			}  else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){
+			}  else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){//書籍種類
 				$getCat = NULL;
 				$getCat = getProductsCategory(1, 'UnitPrice');
-				
-			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){
+			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){//CD種類
 				$getCat = NULL;
 				$getCat = getProductsCategory(2, 'UnitPrice');
-				
 			}
-		} else if (isset($_POST["sort"]) && ($_POST["sort"]=="stockmany")) {
-			
-			if(isset($_POST["search"])){
-				
+		} else if (isset($_POST["sort"]) && ($_POST["sort"]=="stockmany")) { //庫存量從高到低
+			if(isset($_POST["search"])){//搜尋的商品
 				$bookname = NULL;
 				$bookname = getProduct($_POST["search"], 'InStock');
-			}  else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){
-				
+			}  else if(isset($_POST["category"])&& ($_POST["category"]=="Book")){//書籍種類
 				$getCat = NULL;
 				$getCat = getProductsCategory(1, 'InStock');
-			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){
-				
+			} else if(isset($_POST["category"])&& ($_POST["category"]=="CD")){//CD種類
 				$getCat = NULL;
 				$getCat = getProductsCategory(2, 'InStock');
 			}
@@ -191,11 +182,18 @@
 											echo '暫無庫存<br />';
 										}else {
 											echo '庫存： '.$bookname['InStock'][$sch].'<br />';
+											
+											//加入購物車
+											$idName=$bookname['ID'][$sch];
+											echo '<form id="'.$idName.'" action="Receive.php" method="POST">';
+												
+												echo '<input type="hidden" name="ProductID" value="'.$bookname['ID'][$sch].'">';
+												echo '<input type="number" name="quantity">';
+												echo '<input type="image" src="images/cart.png" alt="Submit" width="40" height="40"> ';
+											echo '</form>';
+											echo ajaxFormJs($idName,true);
 										}
-										//加入購物車
-										echo '<form action = "" method = "post">';
-											echo '<input type = "submit" name = "shopping" value = "加入購物車">';
-										echo '</form>';
+										
 										
 										echo '<br/>';
 									echo '</div>';
@@ -224,13 +222,14 @@
 											echo '暫無庫存<br />';
 										}else {
 											echo '庫存： '.$getCat['InStock'][$cat].'<br />';
+											
+											//購物車按鈕
+											echo '<form action = "" method = "post">';
+												echo '<input type = "submit" name = "shopping" value = "加入購物車">';
+											echo '</form>';
+											
+											echo '<br/>';
 										}
-										//購物車按鈕
-										echo '<form action = "" method = "post">';
-											echo '<input type = "submit" name = "shopping" value = "加入購物車">';
-										echo '</form>';
-										
-										echo '<br/>';
 									echo '</div>';
 								echo '</div>';
 							}
