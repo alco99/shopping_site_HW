@@ -5,7 +5,7 @@
 		<meta charset="UTF-8">
 		<link href="css/bootstrap.min.css" rel="stylesheet">
 		<script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
-		<title>這裡放標題</title>
+		<title>購物車</title>
 		<?php # 一些 PHP 程式碼
 		require_once 'db_connect.php';
 		require_once 'function.php';
@@ -48,25 +48,32 @@
 				echo '</div>';
 				
 				echo '<div class="row">';//購物車產品列
+					$mem = getMember($_SESSION['Username']);
+					$cart = getAllCart($mem['ID']);
 					
-					echo '<div class="col-1">';//勾勾框
-						echo '<form action = "" method = "post">';
-							echo '<input type = "checkbox" name = "check" value = "">';
-						echo '</form>';
-					echo '</div>';
+					for($i = 0; $i < count($cart["ID"]); $i++){
+						
 					
-					echo '<div class="col-6">';
-						echo '商品名稱';
-					echo '</div>';
-					
-					echo '<div class="col-3">';
-						echo '商品單價';
-					echo '</div>';
-					
-					echo '<div class="col-2">';
-						echo '商品數量';
-					echo '</div>';
-					
+						echo '<div class="col-1">';//勾勾框
+							echo '<form action = "" method = "post">';
+								echo '<input type = "checkbox" name = "check" value = "" onchange="this.form.submit()">';
+							echo '</form>';
+						echo '</div>';
+						
+						echo '<div class="col-6">';
+							echo $cart["ProductName"][$i];
+						echo '</div>';
+						
+						echo '<div class="col-3">';
+							echo $cart["ProductPrice"][$i];
+						echo '</div>';
+						
+						echo '<div class="col-2">';
+							echo $cart["ProductQuantity"][$i];
+						echo '</div>';
+						
+						echo '<br/><br/>';
+					}
 				echo '</div>';
 				
 				echo '<div class="row">';
