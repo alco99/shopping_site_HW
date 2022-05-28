@@ -5,7 +5,7 @@
 		<meta charset="UTF-8">
 		<link href="css/bootstrap.min.css" rel="stylesheet">
 		<script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
-		<title>這裡放標題</title>
+		<title>結帳頁面</title>
 		<?php # 一些 PHP 程式碼
 		require_once 'db_connect.php';
 		require_once 'function.php';
