@@ -204,4 +204,52 @@ function newProCart($usr, $pro, $name, $price, $proQ) {
 	$inst_result=mysqli_query($dblink,$inst_sql); if (FALSE===$inst_result) echo __LINE__ . mysqli_error($dblink);
 	return  mysqli_insert_id($dblink);
 }
+
+// 更新會員資料
+function updateMemberData($id, $name, $email){
+	global $dblink;
+	$sql =" UPDATE member
+			SET
+			Name = '$name',
+			Email = '$email'
+			WHERE
+			ID = '$id'
+			";
+	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_affected_rows($dblink);
+}
+
+// 尋找密碼
+function searchPassword($id, $psw) {
+	global $dblink;
+	$exam_sql  = "
+				SELECT * 
+				FROM member 
+				WHERE ID = '$id' and Password = '$psw'
+				";
+	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
+	$idx=0;
+	while($row = mysqli_fetch_assoc($chk_rlt)) { #ID Account Password Name Email
+		$rtn['ID'][$idx]=$row['ID'];
+		$rtn['Account'][$idx]=$row['Account'];
+		$rtn['Password'][$idx]=$row['Password'];
+		$rtn['Name'][$idx]=$row['Name'];
+		$rtn['Email'][$idx]=$row['Email'];
+		$idx++;
+	}
+	return $rtn;
+}
+
+// 更新密碼
+function updatePassword($id, $psw){
+	global $dblink;
+	$sql =" UPDATE member
+			SET
+			Password = '$psw'
+			WHERE
+			ID = '$id'
+			";
+	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_affected_rows($dblink);
+}
 ?>
