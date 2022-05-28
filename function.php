@@ -47,7 +47,7 @@ function getProduct($pro, $sort = 'ID', $pat = 'DESC') {
 	return $rtn;
 }
 
-//取得所有商品
+//取得所有有庫存的商品
 function getAllProduct($sort = 'ID', $pat = 'DESC') {
 	global $dblink;
 	$exam_sql  = "
@@ -55,6 +55,28 @@ function getAllProduct($sort = 'ID', $pat = 'DESC') {
 				FROM products 
 				WHERE InStock != 0
 				ORDER BY $sort $pat
+				";
+	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
+	$idx=0;
+	while($row = mysqli_fetch_assoc($chk_rlt)) { #ID ProductName UnitPrice InStock Category	Author Issuer
+		$rtn['ID'][$idx]=$row['ID'];
+		$rtn['ProductName'][$idx]=$row['ProductName'];
+		$rtn['UnitPrice'][$idx]=$row['UnitPrice'];
+		$rtn['InStock'][$idx]=$row['InStock'];
+		$rtn['Category'][$idx]=$row['Category'];
+		$rtn['Author'][$idx]=$row['Author'];
+		$rtn['Issuer'][$idx]=$row['Issuer'];
+		$idx++;
+	}
+	return $rtn;
+}
+
+function getProductformID($id) {
+	global $dblink;
+	$exam_sql  = "
+				SELECT * 
+				FROM products 
+				WHERE ID = '$id'
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
 	$idx=0;
@@ -86,7 +108,7 @@ function getAllCart($act) {
 	$exam_sql  = "
 				SELECT * 
 				FROM cart 
-				WHERE UserID = '$act' && State = 1
+				WHERE UserID = '$act' && ProductQuantity > 0
 				ORDER BY ID DESC
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
@@ -98,7 +120,6 @@ function getAllCart($act) {
 		$rtn['ProductName'][$idx]=$row['ProductName'];
 		$rtn['ProductPrice'][$idx]=$row['ProductPrice'];
 		$rtn['ProductQuantity'][$idx]=$row['ProductQuantity'];
-		$rtn['State'][$idx]=$row['State'];
 		$idx++;
 	}
 	return $rtn;
@@ -115,6 +136,7 @@ function selectCart($act, $pro) {
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
 	$idx=0;
+	$rtn = NULL;
 	while($row = mysqli_fetch_assoc($chk_rlt)) { #ID UserID	ProductID ProductQuantity State
 		$rtn['ID'][$idx]=$row['ID'];
 		$rtn['UserID'][$idx]=$row['UserID'];
@@ -122,7 +144,6 @@ function selectCart($act, $pro) {
 		$rtn['ProductName'][$idx]=$row['ProductName'];
 		$rtn['ProductPrice'][$idx]=$row['ProductPrice'];
 		$rtn['ProductQuantity'][$idx]=$row['ProductQuantity'];
-		$rtn['State'][$idx]=$row['State'];
 		$idx++;
 	}
 	return $rtn;
@@ -158,4 +179,29 @@ function signUpSet($act, $psw) {
 	$inst_result=mysqli_query($dblink,$inst_sql); if (FALSE===$inst_result) echo __LINE__ . mysqli_error($dblink);
 	return  mysqli_insert_id($dblink);
 }	
+
+//修改購物車商品數量
+function UpdateCartQ($act, $pro, $new) {
+	global $dblink;
+	$sql=" 	UPDATE cart
+			SET 
+			ProductQuantity = '$new'
+			WHERE 
+			UserID = '$act' and ProductID = '$pro'
+			";
+	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_affected_rows($dblink);
+}
+
+//新增商品至購物車
+function newProCart($usr, $pro, $name, $price, $proQ) {
+	global $dblink;
+	$inst_sql = "
+			INSERT INTO  cart
+			( UserID, ProductID, ProductName, ProductPrice, ProductQuantity) 
+			VALUES ( '$usr', '$pro', '$name', '$price', '$proQ' )
+			";//UserID	ProductID ProductName ProductPrice ProductQuantity
+	$inst_result=mysqli_query($dblink,$inst_sql); if (FALSE===$inst_result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_insert_id($dblink);
+}
 ?>
