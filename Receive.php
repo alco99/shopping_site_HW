@@ -13,13 +13,18 @@
 		//$_POST["ProductID"]
 		//$_POST["quantity"]
 		if(isset($_POST["quantity"]) && $_POST["quantity"]!=""){
-			if(isset($_POST["ProductID"])){
-				//check productID in cart
-				if(selectCart($_SESSION['UserID'], $_POST["ProductID"])!= ""){
-					//plus
+			if(isset($_POST["ProductID"])){//在購物車裡面尋找商品
+				$inCart = selectCart($_SESSION['UserID'], $_POST["ProductID"]);
+				
+				if($inCart != ""){ //已經在購物車內，只要修改數量
+					//增加購買數量>庫存量的條件篩選
+					$new = $inCart['ProductQuantity'][0] + $_POST["quantity"];
+					UpdateCartQ($_SESSION['UserID'], $_POST["ProductID"], $new);
 					
 				}else{
 					//新增
+					$new = getProductformID($_POST["ProductID"]);
+					$k = newProCart($_SESSION['UserID'], $_POST["ProductID"], $new['ProductName'][0], $new['UnitPrice'][0], $_POST["quantity"]);
 					
 				}
 			}
