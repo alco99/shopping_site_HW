@@ -9,6 +9,7 @@
 		<?php # 一些 PHP 程式碼
 		require_once 'db_connect.php';
 		require_once 'function.php';
+		print_r($_POST);	// test
 		
 		// 判斷顯示的頁面
 		$choiceResult = 0;
@@ -42,6 +43,23 @@
 					updateMemberData($_SESSION['UserID'], $_POST['newName'], $_POST['newEmail']);
 					echo '修改資料成功';
 				}
+			}
+		}
+		
+		// 訂單查詢
+		$orderChoice = 0;
+		echo $_SESSION['UserID'];	// test
+		if(isset($_POST["choice"])){
+			$getOrd = getOrder($_SESSION['UserID']);
+			$priceAndName = getPriceAndName($_SESSION['UserID']);
+			if(isset($_POST['choice1']) && ($_POST["choice1"]=="noShipping")){	// 未出貨
+				$orderChoice = 1;
+			} else if(isset($_POST['choice1']) && ($_POST["choice1"]=="shipping")){	// 已出貨
+				$orderChoice = 2;
+			}else if(isset($_POST['choice1']) && ($_POST["choice1"]=="finish")){	// 已完成
+				$orderChoice = 3;
+			}else if(isset($_POST['choice1']) && ($_POST["choice1"]=="evaluate")){	// 已評價
+				$orderChoice = 4;
 			}
 		}
 		
@@ -81,7 +99,7 @@
 				
 				
 				echo '<div class="row">';
-					//結帳
+					// 會員功能
 					echo '<div class="col-3">';
 						echo '<form action = "" method = "post">';
 							echo '<input type = "radio" name = "choice" value = "newpassword" onchange="this.form.submit()">';
@@ -98,6 +116,7 @@
 							
 						echo '</form>';
 					echo '</div>';
+					
 					// 選擇功能後顯示頁面
 					echo '<div class="col-9">';
 						if($choiceResult == 1) {	// 修改密碼
@@ -130,38 +149,210 @@
 							echo '</form>';
 						}else if($choiceResult == 3) {		// 訂單查詢
 							echo'<div class="row">';
-								echo '<br/>訂單查詢<br/><br/><br/>';
+								echo '<br/>訂單查詢 : ';
+								if($orderChoice == 1){
+									echo '未出貨';
+								}else if($orderChoice == 2){
+									echo '已出貨';
+								}else if($orderChoice == 3){
+									echo '已完成';
+								}else if($orderChoice == 4){
+									echo '已評價';
+								}
+								echo '<br/><br/><br/>';
 							echo'</div>';
 							
+							// 顯示查詢選項
+							echo '<form action = "" method = "post">';
+								echo '<input type = "hidden" name = "choice" value = '.$_POST["choice"].'>';	// 讓 form 記得前一次的動作
+							
+								echo'<div class="row">';
+									echo'<div class="col-2">';
+										echo '查詢條件 : ';
+									echo'</div>';
+									
+									// 未出貨
+									echo'<div class="col-2">';
+										echo '<input type = "radio" name = "choice1" value = "noShipping" onchange="this.form.submit()">';
+										echo '未出貨';
+									echo'</div>';
+									
+									// 已出貨
+									echo'<div class="col-2">';
+										echo '<input type = "radio" name = "choice1" value = "shipping" onchange="this.form.submit()">';
+										echo '已出貨';
+									echo'</div>';
+									
+									// 已完成
+									echo'<div class="col-2">';
+										echo '<input type = "radio" name = "choice1" value = "finish" onchange="this.form.submit()">';
+										echo '已完成';
+									echo'</div>';
+									
+									// 已評價
+									echo'<div class="col-2">';
+										echo '<input type = "radio" name = "choice1" value = "evaluate" onchange="this.form.submit()">';
+										echo '已評價';
+									echo'</div>';
+									
+									echo '<br/><hr/>';
+								echo'</div>';
+							echo '</form>';
+							
+							// 顯示訂單查詢資訊
 							echo'<div class="row">';
-								echo'<div class="col-2">';
-									echo '查詢條件 : ';
-								echo'</div>';								
-								// 未出貨
-								echo'<div class="col-2">';
-									echo '<input type = "radio" name = "choice" value = "noShipping" onchange="this.form.submit()">';
-									echo '未出貨';
-								echo'</div>';
-								
-								// 已出貨
-								echo'<div class="col-2">';
-									echo '<input type = "radio" name = "choice" value = "shipping" onchange="this.form.submit()">';
-									echo '已出貨';
-								echo'</div>';
-								
-								// 已完成
-								echo'<div class="col-2">';
-									echo '<input type = "radio" name = "choice" value = "finish" onchange="this.form.submit()">';
-									echo '已完成';
-								echo'</div>';
-								
-								// 已評價
-								echo'<div class="col-2">';
-									echo '<input type = "radio" name = "choice" value = "evaluate" onchange="this.form.submit()">';
-									echo '已評價';
-								echo'</div>';
-								
-								echo '<br/><hr/>';
+								if($getOrd && $priceAndName){
+									echo'<div class="col-2">';
+										echo '第幾筆資料';
+									echo'</div>';
+									echo'<div class="col-2">';
+										echo '訂單編號';
+									echo'</div>';
+									echo'<div class="col-2">';
+										echo '訂單金額';
+									echo'</div>';
+									echo'<div class="col-2">';
+										echo '商品名稱';
+									echo'</div>';
+									echo'<div class="col-2">';
+										echo '數量';
+									echo'</div>';
+									echo'<div class="col-2">';
+										echo '訂單狀態';
+									echo'</div>';
+									echo '<br/><br/>';
+									
+									if($orderChoice == 1){	// 未出貨 (Sent = 'n')
+										$count = 0;
+										for($i = 0; $i < count($getOrd['UserID']); $i++){
+											if($getOrd['Sent'][$i] == 'n'){
+												$count++;
+												echo'<div class="col-2">';		// 第幾筆資料
+													echo $count;
+												echo'</div>';
+												echo'<div class="col-2">';		// 訂單編號
+													echo $getOrd['OrderNum'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 訂單金額
+													echo $priceAndName['UnitPrice'][$i] * $getOrd['Amount'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 商品名稱
+													echo $priceAndName['ProductName'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 數量
+													echo $getOrd['Amount'][$i];
+												echo'</div>';
+												echo'<div class="col-2">';		// 訂單狀態
+													echo '未出貨，';
+													if($getOrd['Payment'][$i] == 'y'){
+														echo '已付款';
+													}else{
+														echo '未付款';
+													}
+												echo'</div>';
+												echo'<br/><br/>';
+											}
+										}
+										if($count == 0){
+											echo '目前查無訂單';
+										}
+									} else if($orderChoice == 2){	// 已出貨 (Sent = 'y' & Payment = 'n')
+										$count = 0;
+										for($i = 0; $i < count($getOrd['UserID']); $i++){
+											if($getOrd['Sent'][$i] == 'y' && $getOrd['Payment'][$i] == 'n'){
+												$count++;
+												echo'<div class="col-2">';		// 第幾筆資料
+													echo $count;
+												echo'</div>';
+												echo'<div class="col-2">';		// 訂單編號
+													echo $getOrd['OrderNum'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 訂單金額
+													echo $priceAndName['UnitPrice'][$i] * $getOrd['Amount'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 商品名稱
+													echo $priceAndName['ProductName'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 數量
+													echo $getOrd['Amount'][$i];
+												echo'</div>';
+												echo'<div class="col-2">';		// 訂單狀態
+													echo '已出貨，';
+													if($getOrd['Payment'][$i] == 'y'){
+														echo '已付款';
+													}else{
+														echo '未付款';
+													}
+												echo'</div>';
+												echo'<br/><br/>';
+											}
+										}
+										if($count == 0){
+											echo '目前查無訂單';
+										}
+									
+									} else if($orderChoice == 3){	// 已完成 (Sent = 'y' & Payment = 'y')
+										$count = 0;
+										for($i = 0; $i < count($getOrd['UserID']); $i++){
+											if($getOrd['Sent'][$i] == 'y' && $getOrd['Payment'][$i] == 'y'){
+												$count++;
+												echo'<div class="col-2">';		// 第幾筆資料
+													echo $count;
+												echo'</div>';
+												echo'<div class="col-2">';		// 訂單編號
+													echo $getOrd['OrderNum'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 訂單金額
+													echo $priceAndName['UnitPrice'][$i] * $getOrd['Amount'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 商品名稱
+													echo $priceAndName['ProductName'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 數量
+													echo $getOrd['Amount'][$i];
+												echo'</div>';
+												echo'<div class="col-2">';		// 訂單狀態
+													echo '訂單已完成';
+												echo'</div>';
+												echo'<br/><br/>';
+											}
+										}
+										if($count == 0){
+											echo '目前查無訂單';
+										}
+									} else if($orderChoice == 4){	// 已評價 (Sent = 'y' & Payment = 'y')
+										$count = 0;
+										for($i = 0; $i < count($getOrd['UserID']); $i++){
+											if($getOrd['Sent'][$i] == 'y' && $getOrd['Payment'][$i] == 'y'){
+												$count++;
+												echo'<div class="col-2">';		// 第幾筆資料
+													echo $count;
+												echo'</div>';
+												echo'<div class="col-2">';		// 訂單編號
+													echo $getOrd['OrderNum'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 訂單金額
+													echo $priceAndName['UnitPrice'][$i] * $getOrd['Amount'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 商品名稱
+													echo $priceAndName['ProductName'][$i];
+												echo'</div>';												
+												echo'<div class="col-2">';		// 數量
+													echo $getOrd['Amount'][$i];
+												echo'</div>';
+												echo'<div class="col-2">';		// 訂單狀態
+													echo '已評價';
+												echo'</div>';
+												echo'<br/><br/>';
+											}
+										}
+										if($count == 0){
+											echo '目前查無訂單';
+										}										
+									}
+								} else{
+									echo '目前查無訂單';
+								}
 							echo'</div>';
 						}
 					echo '</div>';
