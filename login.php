@@ -17,13 +17,22 @@
 				$memdata = getMember($_POST["account"]);
 				if($memdata == ""){//無帳號則顯示錯誤
 					echo "帳號輸入錯誤";
+					echo '<script>';
+					echo 'window.location.href = "login.php"';
+					echo '</script>';
 				} else {
 					if($_POST["password"] == $memdata['Password'][0]){//登入成功
 						$_SESSION['login'] = '1';
 						$_SESSION['UserID'] = $memdata['ID'][0];
 						echo '登入成功<br/>';
+						echo '<script>';
+						echo 'window.location.href = "index.php"';
+						echo '</script>';
 					} else {//密碼錯誤
 						echo "密碼輸入錯誤";
+						echo '<script>';
+						echo 'window.location.href = "login.php"';
+						echo '</script>';
 					}
 				}
 			}
@@ -36,8 +45,14 @@
 					$_SESSION['UserID'] = signUpSet($_POST["account"], $_POST["password"]);
 					echo '註冊成功<br/>';
 					$_SESSION['login'] = '1';
+					echo '<script>';
+					echo 'window.location.href = "index.php"';
+					echo '</script>';
 				} else {
 					echo "帳號重複或已有會員";
+					echo '<script>';
+					echo 'window.location.href = "login.php"';
+					echo '</script>';
 				}
 			}
 		}
