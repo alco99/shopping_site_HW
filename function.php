@@ -252,4 +252,48 @@ function updatePassword($id, $psw){
 	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
 	return  mysqli_affected_rows($dblink);
 }
+
+// 獲得會員訂單
+function getOrder($id){
+	global $dblink;
+	$exam_sql  = "
+				SELECT * 
+				FROM `order`
+				WHERE UserID = '$id'
+				";
+	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
+	$idx=0;
+	while($row = mysqli_fetch_assoc($chk_rlt)) { #ID Account Password Name Email
+		$rtn['ID'][$idx]=$row['ID'];
+		$rtn['OrderNum'][$idx]=$row['OrderNum'];
+		$rtn['ProductID'][$idx]=$row['ProductID'];
+		$rtn['UserID'][$idx]=$row['UserID'];
+		$rtn['Amount'][$idx]=$row['Amount'];
+		$rtn['ReceiveAddress'][$idx]=$row['ReceiveAddress'];
+		$rtn['ReceiveName'][$idx]=$row['ReceiveName'];
+		$rtn['ReceivePhone'][$idx]=$row['ReceivePhone'];
+		$rtn['Payment'][$idx]=$row['Payment'];
+		$rtn['Sent'][$idx]=$row['Sent'];
+		$idx++;
+	}
+	return $rtn;
+}
+
+// 獲得商品的價錢和名稱
+function getPriceAndName($id){
+	global $dblink;
+	$exam_sql  = "
+				SELECT P.UnitPrice, P.ProductName 
+				FROM products as P, `order` as O
+				WHERE P.ID = O.ProductID and O.UserID = '$id'
+				";
+	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
+	$idx=0;
+	while($row = mysqli_fetch_assoc($chk_rlt)) { #ID Account Password Name Email
+		$rtn['UnitPrice'][$idx]=$row['UnitPrice'];
+		$rtn['ProductName'][$idx]=$row['ProductName'];
+		$idx++;
+	}
+	return $rtn;
+}
 ?>
