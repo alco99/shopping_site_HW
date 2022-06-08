@@ -16,7 +16,7 @@
 			//echo '<pre>';print_r($n);echo '</pre>';
 			
 		
-			if (isset($_POST["checkout"]) && ($_POST["checkout"]!="")) {
+			if (isset($_POST["checkout"]) && ($_POST["checkout"]!="")) {//從購物車頁面送來的資訊
 				$seq = explode(",", $_POST["seq"]);
 				$list = explode(",", $_POST["cartList"]);
 				$sum = explode(",", $_POST["sum"]);
@@ -31,7 +31,10 @@
 			}
 							
 			if (isset($_POST["sent"]) && ($_POST["sent"]!="")){
-				if(isset($_POST["receiver"]) && isset($_POST["phone"]) && isset($_POST["address"]) && isset($_POST["bill"])){
+				
+				if(isset($_POST["receiver"]) && isset($_POST["phone"]) && isset($_POST["address"])){
+					
+					
 					$orderID = explode(";", $_POST["order"]);
 					for($i = 0; $i < count($orderID); $i++){
 						$wholeOrder[$i] = explode(",", $orderID[$i]);
@@ -47,15 +50,38 @@
 						$allcount = array_sum($count);
 						$time = $allcount +1;
 					}
-					
-					
-					
-					for($i = 0; $i < count($wholeOrder); $i++){
-						$k = newOrder($time, $wholeOrder[$i][2], $_SESSION['UserID'], $wholeOrder[$i][5], $_POST["address"], $_POST["receiver"], $_POST["phone"], 'n', 'n', $_POST["bill"]);
+					$checkStock = 1;
+					for($i = 0; $i < count($wholeOrder); $i++){//先處理庫存刪除的事
+						$pro = getProductformID($wholeOrder[$i][2]);
+						if($wholeOrder[$i][5] > $pro['InStock'][0]){//結帳時庫存不足
+							$checkStock = 0;
+							break;
+						}
 					}
-					echo '<script>';
-						echo 'window.location.href = "index.php"';
-					echo '</script>';
+					
+					if($checkStock){
+						for($i = 0; $i < count($wholeOrder); $i++){
+							$pro = getProductformID($wholeOrder[$i][2]);
+							$new = $pro['InStock'][0] - $wholeOrder[$i][5];
+							UpdateProQ($wholeOrder[$i][2], $new);
+						}
+						for($i = 0; $i < count($wholeOrder); $i++){//刪除購物車內以結帳商品並新增訂單
+							
+							UpdateCartQ($_SESSION['UserID'], $wholeOrder[$i][2], 0);
+							$k = newOrder($time, $wholeOrder[$i][2], $_SESSION['UserID'], $wholeOrder[$i][5], $_POST["address"], $_POST["receiver"], $_POST["phone"], 'n', 'n');
+						}
+						echo '訂單成功<br/>';
+						echo '<script>';
+							echo 'window.location.href = "index.php"';
+						echo '</script>';
+					} else{
+						echo '庫存不足無法下訂單<br/>';
+						echo '<script>';
+							echo 'window.location.href = "settlement.php"';
+						echo '</script>';
+					}
+					
+					
 				}else {
 					echo '填寫不完全';
 					echo '<script>';
@@ -161,10 +187,11 @@
 							echo '<input type = "hidden" name = "order" value = "'.$wholeList.'">';
 							echo '收件人姓名  <input type = "text" name = "receiver" maxlength = 10><br/><br/>';
 							echo '收件人電話  <input type = "text" name = "phone" maxlength = 10><br/><br/>';
+							echo '送貨方式：宅配到府<br/><br/>';
 							echo '收件人地址  <textarea name = "address" rows = "2" cols = "25">';
 								
 							echo '</textarea><br/><br/>';
-							echo '帳單末三碼  <input type = "text" name = "bill" maxlength = 3><br/><br/>';
+							echo '付款方式：貨到付款<br/><br/>';
 							echo '<input type = "submit" name = "sent">';
 						echo '</form>';
 					echo '</div>';
