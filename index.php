@@ -14,7 +14,8 @@
 		require_once 'function.php';
 		$bookname = NULL;
 		$getCat = NULL;
-		print_r($_POST);
+		
+		//print_r($_POST);
 		//收到搜尋指令
 		if (isset($_POST["search"]) && ($_POST["search"]!="")) {
 			$bookname = getProduct($_POST["search"]);
@@ -80,6 +81,7 @@
 					
 					echo '<div class="col-4">';
 						//搜尋
+						echo '<br/>';
 						echo '<form action = "" method = "post">';
 							echo '<input type = "text" name = "search">';
 							echo '<input type = "submit" value = "搜尋">';
@@ -104,7 +106,7 @@
 					
 					//登入登出用超連結
 					echo '<div class="col-2">';
-						if($_SESSION['login']){
+						if($_SESSION['login'] == '1'){
 							echo '<a href = "logout.php" >';
 							//插入圖片
 							echo '<img src = "images/logout.png">';
@@ -114,6 +116,7 @@
 							//插入圖片
 							echo '<img src = "images/login.png">';
 							echo '</a>';
+							$_SESSION['login'] = NULL;
 						}
 					echo '</div>';
 				echo '</div>';
@@ -188,7 +191,7 @@
 											echo '<form id="'.$idName.'" action="Receive.php" method="POST">';
 												
 												echo '<input type="hidden" name="ProductID" value="'.$bookname['ID'][$sch].'">';
-												echo '<input type="number" name="quantity">';
+												echo '<input type="number" name="quantity" style = "width: 5ch" max = '.$bookname['InStock'][$sch].'>';
 												echo '<input type="image" src="images/cart.png" alt="Submit" width="40" height="40"> ';
 											echo '</form>';
 											echo ajaxFormJs($idName,true);
@@ -223,12 +226,15 @@
 										}else {
 											echo '庫存： '.$getCat['InStock'][$cat].'<br />';
 											
-											//購物車按鈕
-											echo '<form action = "" method = "post">';
-												echo '<input type = "submit" name = "shopping" value = "加入購物車">';
+											//加入購物車
+											$idName=$getCat['ID'][$cat];
+											echo '<form id="'.$idName.'" action="Receive.php" method="POST">';
+												
+												echo '<input type="hidden" name="ProductID" value="'.$getCat['ID'][$cat].'">';
+												echo '<input type="number" name="quantity" style = "width: 5ch" max = '.$getCat['InStock'][$cat].' >';
+												echo '<input type="image" src="images/cart.png" alt="Submit" width="40" height="40"> ';
 											echo '</form>';
-											
-											echo '<br/>';
+											echo ajaxFormJs($idName,true);
 										}
 									echo '</div>';
 								echo '</div>';
