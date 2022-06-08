@@ -9,7 +9,7 @@
 		<?php # 一些 PHP 程式碼
 		require_once 'db_connect.php';
 		require_once 'function.php';
-		print_r($_POST);	// test
+		//print_r($_POST);	// test
 		
 		// 判斷顯示的頁面
 		$choiceResult = 0;
@@ -48,7 +48,7 @@
 		
 		// 訂單查詢
 		$orderChoice = 0;
-		echo $_SESSION['UserID'];	// test
+		//echo $_SESSION['UserID'];	// test
 		if(isset($_POST["choice"])){
 			$getOrd = getOrder($_SESSION['UserID']);
 			$priceAndName = getPriceAndName($_SESSION['UserID']);
@@ -61,6 +61,12 @@
 			}else if(isset($_POST['choice1']) && ($_POST["choice1"]=="evaluate")){	// 已評價
 				$orderChoice = 4;
 			}
+		}
+		
+		//評價系統evaluation
+		if(isset($_POST["subEva"]) && ($_POST["evaluation"]!= "")){
+			$eva = $_POST["evaluation"];
+			UpdateEva($eva, $_POST["evaID"]);
 		}
 		
 		?>
@@ -189,10 +195,10 @@
 										echo '已完成';
 									echo'</div>';
 									
-									// 已評價
+									// 評價
 									echo'<div class="col-2">';
 										echo '<input type = "radio" name = "choice1" value = "evaluate" onchange="this.form.submit()">';
-										echo '已評價';
+										echo '評價';
 									echo'</div>';
 									
 									echo '<br/><hr/>';
@@ -320,7 +326,7 @@
 										if($count == 0){
 											echo '目前查無訂單';
 										}
-									} else if($orderChoice == 4){	// 已評價 (Sent = 'y' & Payment = 'y')
+									} else if($orderChoice == 4){	// 評價 (Sent = 'y' & Payment = 'y')
 										$count = 0;
 										for($i = 0; $i < count($getOrd['UserID']); $i++){
 											if($getOrd['Sent'][$i] == 'y' && $getOrd['Payment'][$i] == 'y'){
@@ -341,7 +347,17 @@
 													echo $getOrd['Amount'][$i];
 												echo'</div>';
 												echo'<div class="col-2">';		// 訂單狀態
-													echo '已評價';
+													if($getOrd['Evaluation'][$i] == NULL){
+														echo '<form action="" method="POST">';
+															echo '<input type = "hidden" name = "evaID" value = '.$getOrd['ID'][$i].'>';
+															echo '<input type="number" name="evaluation" style = "width: 5ch" max = 5 min = 1>';
+															echo '<input type = "submit" name = "subEva" value = "send">';
+														echo '</form>';
+														
+													} else {
+														echo '評價：'.$getOrd['Evaluation'][$i].'/5';
+													}
+													
 												echo'</div>';
 												echo'<br/><br/>';
 											}
