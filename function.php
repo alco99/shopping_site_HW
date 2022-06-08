@@ -94,6 +94,19 @@ function getProductformID($id) {
 	return $rtn;
 }
 
+//修改庫存
+function UpdateProQ($pro, $new) {
+	global $dblink;
+	$sql=" 	UPDATE products 
+			SET 
+			InStock = '$new'
+			WHERE 
+			ID = '$pro'
+			";
+	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_affected_rows($dblink);
+}
+
 //立刻跳出資訊
 function ajaxFormJs($idName,$span) { # Ajax 表單 , 需要 jquery
 	if ($span) $rtn='<span id="Rlt'.$idName.'"></span>'; else $rtn=''; 
@@ -150,6 +163,7 @@ function selectCart($act, $pro) {
 	return $rtn;
 }
 
+//搜尋該用戶購物車清單
 function getThisCart($act, $id) {
 	global $dblink;
 	$exam_sql  = "
@@ -224,15 +238,28 @@ function newProCart($usr, $pro, $name, $price, $proQ) {
 }
 
 //新訂單
-function newOrder($ordN, $pro, $usr, $proQ, $add, $name, $pho, $pay, $sent, $bill) {
+function newOrder($ordN, $pro, $usr, $proQ, $add, $name, $pho, $pay, $sent) {
 	global $dblink;
 	$inst_sql = "
 			INSERT INTO  `order`
-			( OrderNum, ProductID, UserID, Amount, ReceiveAddress, ReceiveName, ReceivePhone, Payment, Sent, Bill) 
-			VALUES ( '$ordN', '$pro', '$usr', '$proQ', '$add', '$name', '$pho', '$pay', '$sent', '$bill')
+			( OrderNum, ProductID, UserID, Amount, ReceiveAddress, ReceiveName, ReceivePhone, Payment, Sent) 
+			VALUES ( '$ordN', '$pro', '$usr', '$proQ', '$add', '$name', '$pho', '$pay', '$sent')
 			";//OrderNum	ProductID	UserID	Amount	ReceiveAddress	ReceiveName	ReceivePhone	Payment	Sent
 	$inst_result=mysqli_query($dblink,$inst_sql); if (FALSE===$inst_result) echo __LINE__ . mysqli_error($dblink);
 	return  mysqli_insert_id($dblink);
+}
+
+//新增訂單評價
+function UpdateEva($eva, $id) {
+	global $dblink;
+	$sql=" 	UPDATE `order`
+			SET 
+			Evaluation = '$eva'
+			WHERE 
+			ID = '$id'
+			";
+	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_affected_rows($dblink);
 }
 
 //搜尋用戶過往訂單的訂單編號
@@ -258,7 +285,7 @@ function getOldOrder($id) {
 		$rtn['ReceivePhone'][$idx]=$row['ReceivePhone'];
 		$rtn['Payment'][$idx]=$row['Payment'];
 		$rtn['Sent'][$idx]=$row['Sent'];
-		$rtn['Bill'][$idx]=$row['Bill'];
+		$rtn['Evaluation'][$idx]=$row['Evaluation'];
 		$idx++;
 	}
 	return $rtn;
@@ -333,6 +360,7 @@ function getOrder($id){
 		$rtn['ReceivePhone'][$idx]=$row['ReceivePhone'];
 		$rtn['Payment'][$idx]=$row['Payment'];
 		$rtn['Sent'][$idx]=$row['Sent'];
+		$rtn['Evaluation'][$idx]=$row['Evaluation'];
 		$idx++;
 	}
 	return $rtn;
