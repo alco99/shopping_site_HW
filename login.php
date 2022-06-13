@@ -15,12 +15,20 @@
 			//檢查帳號密碼
 			if(isset($_POST["account"]) && isset($_POST["password"])){
 				$memdata = getMember($_POST["account"]);
+				if($memdata['Account'][0] == "manager" && $_POST["password"] == $memdata['Password'][0]){
+					$_SESSION['login'] = '2';
+					$_SESSION['UserID'] = $memdata['ID'][0];
+					echo '<script>';
+						echo 'window.location.href = "seller.php"';
+					echo '</script>';
+				}
 				if($memdata == ""){//無帳號則顯示錯誤
 					echo "帳號輸入錯誤";
 					echo '<script>';
 					echo 'window.location.href = "login.php"';
 					echo '</script>';
 				} else {
+					
 					if($_POST["password"] == $memdata['Password'][0]){//登入成功
 						$_SESSION['login'] = '1';
 						$_SESSION['UserID'] = $memdata['ID'][0];
