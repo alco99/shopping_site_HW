@@ -48,12 +48,35 @@ function getProduct($pro, $sort = 'ID', $pat = 'DESC') {
 }
 
 //取得所有有庫存的商品
-function getAllProduct($sort = 'ID', $pat = 'DESC') {
+function getInProduct($sort = 'ID', $pat = 'DESC') {
 	global $dblink;
 	$exam_sql  = "
 				SELECT * 
 				FROM products 
 				WHERE InStock != 0
+				ORDER BY $sort $pat
+				";
+	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
+	$idx=0;
+	while($row = mysqli_fetch_assoc($chk_rlt)) { #ID ProductName UnitPrice InStock Category	Author Issuer
+		$rtn['ID'][$idx]=$row['ID'];
+		$rtn['ProductName'][$idx]=$row['ProductName'];
+		$rtn['UnitPrice'][$idx]=$row['UnitPrice'];
+		$rtn['InStock'][$idx]=$row['InStock'];
+		$rtn['Category'][$idx]=$row['Category'];
+		$rtn['Author'][$idx]=$row['Author'];
+		$rtn['Issuer'][$idx]=$row['Issuer'];
+		$idx++;
+	}
+	return $rtn;
+}
+
+//獲得所有資料表裡的商品
+function getAllProduct($sort = 'ID', $pat = 'DESC') {
+	global $dblink;
+	$exam_sql  = "
+				SELECT * 
+				FROM products 
 				ORDER BY $sort $pat
 				";
 	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
@@ -384,5 +407,110 @@ function getPriceAndName($id){
 	return $rtn;
 }
 
+//搜尋所有未出貨訂單的資料
+function getUnsentOrder() {
+	global $dblink;
+	$exam_sql  = "
+				SELECT * 
+				FROM `order`
+				WHERE Sent = 'n'
+				";
+	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
+	$idx=0;
+	echo $id;
+	while($row = mysqli_fetch_assoc($chk_rlt)) { #OrderNum ProductID UserID Amount ReceiveAddress ReceiveName ReceivePhone Payment Sent Bill
+		$rtn['ID'][$idx]=$row['ID'];
+		//echo $row['ID'];
+		$rtn['OrderNum'][$idx]=$row['OrderNum'];
+		$rtn['ProductID'][$idx]=$row['ProductID'];
+		$rtn['UserID'][$idx]=$row['UserID'];
+		$rtn['Amount'][$idx]=$row['Amount'];
+		$rtn['ReceiveAddress'][$idx]=$row['ReceiveAddress'];
+		$rtn['ReceiveName'][$idx]=$row['ReceiveName'];
+		$rtn['ReceivePhone'][$idx]=$row['ReceivePhone'];
+		$rtn['Payment'][$idx]=$row['Payment'];
+		$rtn['Sent'][$idx]=$row['Sent'];
+		$rtn['Evaluation'][$idx]=$row['Evaluation'];
+		$idx++;
+	}
+	return $rtn;
+}
 
+//搜尋所有未完成(付款)訂單的資料
+function getUnpayOrder() {
+	global $dblink;
+	$exam_sql  = "
+				SELECT * 
+				FROM `order`
+				WHERE Payment = 'n' and Sent != 'n'
+				";
+	$chk_rlt=mysqli_query($dblink,$exam_sql); if (FALSE===$chk_rlt) echo __LINE__ . mysqli_error($dblink);
+	$idx=0;
+	echo $id;
+	while($row = mysqli_fetch_assoc($chk_rlt)) { #OrderNum ProductID UserID Amount ReceiveAddress ReceiveName ReceivePhone Payment Sent Bill
+		$rtn['ID'][$idx]=$row['ID'];
+		//echo $row['ID'];
+		$rtn['OrderNum'][$idx]=$row['OrderNum'];
+		$rtn['ProductID'][$idx]=$row['ProductID'];
+		$rtn['UserID'][$idx]=$row['UserID'];
+		$rtn['Amount'][$idx]=$row['Amount'];
+		$rtn['ReceiveAddress'][$idx]=$row['ReceiveAddress'];
+		$rtn['ReceiveName'][$idx]=$row['ReceiveName'];
+		$rtn['ReceivePhone'][$idx]=$row['ReceivePhone'];
+		$rtn['Payment'][$idx]=$row['Payment'];
+		$rtn['Sent'][$idx]=$row['Sent'];
+		$rtn['Evaluation'][$idx]=$row['Evaluation'];
+		$idx++;
+	}
+	return $rtn;
+}
+
+//新增商品
+function NewProducts($name, $price, $quan, $cat, $aut, $isu) { //ProductName	UnitPrice	InStock	Category	Author	Issuer
+	global $dblink;
+	$inst_sql = "
+			INSERT INTO  products
+			( ProductName, UnitPrice, InStock, Category, Author, Issuer ) VALUES ( '$name', '$price', '$quan', '$cat', '$aut', '$isu' )";
+	$inst_result=mysqli_query($dblink,$inst_sql); if (FALSE===$inst_result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_insert_id($dblink);
+}
+
+//更改庫存
+function UpdateInstock($qua, $id) {
+	global $dblink;
+	$sql=" 	UPDATE products
+			SET 
+			InStock  = '$qua'
+			WHERE 
+			ID = '$id'
+			";
+	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_affected_rows($dblink);
+}
+
+//更改運送狀態
+function UpdatePayment($user, $ord) {
+	global $dblink;
+	$sql=" 	UPDATE `order`
+			SET 
+			Payment  = 'y'
+			WHERE 
+			UserID = '$user' and OrderNum = '$ord'
+			";
+	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_affected_rows($dblink);
+}
+
+//更改付款狀態
+function UpdateShipping($user, $ord) {
+	global $dblink;
+	$sql=" 	UPDATE `order`
+			SET 
+			Sent  = 'y'
+			WHERE 
+			UserID = '$user' and OrderNum = '$ord'
+			";
+	$result = mysqli_query($dblink,$sql);if (FALSE===$result) echo __LINE__ . mysqli_error($dblink);
+	return  mysqli_affected_rows($dblink);
+}
 ?>
