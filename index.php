@@ -89,7 +89,12 @@
 					echo '</div>';
 					
 					echo '<div class="col-2">';//會員頁面
-						if($_SESSION['login']){
+						if($_SESSION['login'] == 2){
+							echo '<a href = "seller.php" >';
+							echo '<img src = "images/memberpage.png">';
+							echo '</a>';
+						}
+						elseif($_SESSION['login']){
 							echo '<a href = "member.php" >';
 							echo '<img src = "images/memberpage.png">';
 							echo '</a>';
@@ -241,7 +246,7 @@
 							}
 						} else { //沒有搜尋商品，隨機展示兩項商品
 							//所有商品列表
-							$allPro = getAllProduct();
+							$allPro = getInProduct();
 
 							//產生隨機數
 							$randomone = rand(0, count($allPro['ID'])-1);
