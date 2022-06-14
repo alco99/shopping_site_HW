@@ -20,14 +20,10 @@
 				if($allUnsent == ""){
 					$allUnsent = 1;
 				}
-				//print_r($allUnsent);
-				
 				$allUnpay = getUnpayOrder();
 				if($allUnpay == ""){
 					$allUnpay = 1;
 				}
-				//print_r($allUnpay);
-				
 			}
 		}
 		
@@ -36,9 +32,8 @@
 			if($_POST['ProName'] && $_POST['price'] && $_POST['instock'] && $_POST['category'] && $_POST['author'] && $_POST['issuer']){
 				$tmp = NewProducts($_POST['ProName'], $_POST['price'], $_POST['instock'], $_POST['category'], $_POST['author'], $_POST['issuer']);
 				echo '輸入成功';
-				$all = getAllProduct();
-				$lest = count($all['ID']);
 				
+				$all = getAllProduct();
 			}else{
 				echo '請填寫完整';
 			}
@@ -48,6 +43,7 @@
 
 		if(isset($_POST['QuaSent']) && $_POST['ProQ']!= ""){
 			$tmp = UpdateInstock($_POST['ProQ'], $_POST['whichPro']);
+			$allPro = getAllProduct();
 		}
 		
 		//更新訂單
@@ -55,10 +51,26 @@
 		
 		if(isset($_POST['paymentSub']) && $_POST['paymentUser']!= ""){
 			$tmp = UpdatePayment($_POST['paymentUser'], $_POST['paymentOrder']);
+			$allUnsent = getUnsentOrder();
+				if($allUnsent == ""){
+					$allUnsent = 1;
+				}
+				$allUnpay = getUnpayOrder();
+				if($allUnpay == ""){
+					$allUnpay = 1;
+				}
 		}
 			
 		if(isset($_POST['shippingSub']) && $_POST['shippingUser']!= ""){
 			$tmp = UpdateShipping($_POST['shippingUser'], $_POST['shippingOrder']);
+			$allUnsent = getUnsentOrder();
+				if($allUnsent == ""){
+					$allUnsent = 1;
+				}
+				$allUnpay = getUnpayOrder();
+				if($allUnpay == ""){
+					$allUnpay = 1;
+				}
 		}
 		
 		?>
@@ -284,8 +296,12 @@
 								echo '</div>';
 							echo '</div>';
 							
-						} else{
-							echo '其他';
+						} elseif($all){
+							
+							echo '新增<br/>';
+							echo '商品名稱：'.$all['ProductName'][0].'<br/>';
+							echo '商品價格：'.$all['UnitPrice'][0].'<br/>';
+							echo '商品庫存：'.$all['InStock'][0].'<br/>';
 						}
 						
 					echo '</div>';
