@@ -69,7 +69,7 @@ _PHP_MySqli.rar、bootstrap-5.1.3-dist.rar，一個是關於資料庫的處理�
 ## 網站功能展示
 在localhost展示，Demo影片：https://youtu.be/Dk5k_zAaQeg
 
-![首頁](htps://github.com/user-attachments/assets/7454c987-af98-4a50-b415-4641417d95b7)
+![首頁](htps://github.com/user-attachments/assets/7454c987-af98-4a50-b415-4641417d95b7)  
 ![會員修改密碼](https://github.com/user-attachments/assets/e8650d32-6cee-4126-abd7-823bc4978747)  
 ![搜尋結果呈現](https://github.com/user-attachments/assets/1276d197-5976-455f-b264-062a917ad3a3)  
 ![價錢由低到高排序](https://github.com/user-attachments/assets/c8d6bdb3-3f2a-42c7-83ee-6a3a94afa783)  
